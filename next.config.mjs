@@ -20,6 +20,12 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    serverActions: {
+      allowedOrigins: [
+        'localhost:3000',
+        /^https:\/\/.*\.app\.github\.dev$/,
+      ],
+    },
   },
 }
 
