@@ -1,9 +1,9 @@
 import Link from "next/link"
-import { currentUser } from "@clerk/nextjs/server"
 import { Button } from "@/components/ui/button"
+import { getAuthSession } from "@/lib/auth"
 
 export default async function Home() {
-  const user = await currentUser()
+  const session = await getAuthSession()
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-amber-50 to-amber-100">
@@ -12,7 +12,7 @@ export default async function Home() {
         <p className="text-xl text-amber-700">A fun, interactive way to distribute THR during Eid celebrations</p>
 
         <div className="flex flex-col md:flex-row gap-4 justify-center mt-8">
-          {user ? (
+          {session?.user ? (
             <>
               <Button asChild size="lg" className="bg-amber-600 hover:bg-amber-700">
                 <Link href="/admin/dashboard">Admin Dashboard</Link>

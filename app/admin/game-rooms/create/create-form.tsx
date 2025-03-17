@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 
-export function CreateGameRoomForm({ userId }: { userId: string }) {
+export function CreateGameRoomForm() {
   const [loading, setLoading] = useState(false)
   const [migrationNeeded, setMigrationNeeded] = useState(false)
   const router = useRouter()
@@ -24,7 +24,7 @@ export function CreateGameRoomForm({ userId }: { userId: string }) {
 
     try {
       const formData = new FormData(event.currentTarget)
-      const result = await createGameRoom(formData, userId)
+      const result = await createGameRoom(formData)
 
       if (result.success) {
         toast({

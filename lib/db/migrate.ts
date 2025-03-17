@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { drizzle } from "drizzle-orm/neon-http"
 import { neon } from "@neondatabase/serverless"
 import * as schema from "./schema"
@@ -7,7 +6,6 @@ import * as schema from "./schema"
 
 async function main() {
   if (!process.env.DATABASE_URL) {
-    console.log(!process.env.DATABASE_URL)
     console.error("❌ DATABASE_URL environment variable is not set")
     process.exit(1)
   }
@@ -20,7 +18,7 @@ async function main() {
 
     console.log("📊 Creating schema...")
 
-    // Create enums
+    // Create enums one by one
     await sql`
       DO $$ 
       BEGIN
@@ -29,6 +27,7 @@ async function main() {
         END IF;
       END $$;
     `
+
     await sql`
       DO $$ 
       BEGIN
@@ -37,6 +36,7 @@ async function main() {
         END IF;
       END $$;
     `
+
     await sql`
       DO $$ 
       BEGIN
@@ -53,8 +53,47 @@ async function main() {
         "name" TEXT NOT NULL,
         "role" role NOT NULL DEFAULT 'participant',
         "email" TEXT,
+        "password" TEXT,
+        "email_verified" TIMESTAMP,
+        "image" TEXT,
         "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
         "updated_at" TIMESTAMP NOT NULL DEFAULT NOW()
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS "accounts" (
+        "id" TEXT PRIMARY KEY,
+        "user_id" TEXT NOT NULL REFERENCES "users"("id") ON DELETE CASCADE,
+        "type" TEXT NOT NULL,
+        "provider" TEXT NOT NULL,
+        "provider_account_id" TEXT NOT NULL,
+        "refresh_token" TEXT,
+        "access_token" TEXT,
+        "expires_at" INTEGER,
+        "token_type" TEXT,
+        "scope" TEXT,
+        "id_token" TEXT,
+        "session_state" TEXT,
+        UNIQUE("provider", "provider_account_id")
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS "sessions" (
+        "id" TEXT PRIMARY KEY,
+        "user_id" TEXT NOT NULL REFERENCES "users"("id") ON DELETE CASCADE,
+        "session_token" TEXT NOT NULL UNIQUE,
+        "expires" TIMESTAMP NOT NULL
+      )
+    `
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS "verification_tokens" (
+        "identifier" TEXT NOT NULL,
+        "token" TEXT NOT NULL,
+        "expires" TIMESTAMP NOT NULL,
+        PRIMARY KEY ("identifier", "token")
       )
     `
 

@@ -1,19 +1,21 @@
 import { redirect } from "next/navigation"
-import { currentUser } from "@clerk/nextjs/server"
 import { DashboardShell } from "@/components/ui/dashboard-shell"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { getAuthSession } from "@/lib/auth"
 
 export default async function AdminDashboard() {
   // Check if user is authenticated
-  const user = await currentUser()
-  if (!user) {
+  const session = await getAuthSession()
+  if (!session?.user) {
     redirect("/sign-in")
   }
 
-  // TODO: Check if user has admin role
-  // This will be implemented with your user database
+  // Check if user has admin role
+  if (session.user.role !== "admin") {
+    redirect("/")
+  }
 
   return (
     <DashboardShell>

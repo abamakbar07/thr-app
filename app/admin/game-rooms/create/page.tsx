@@ -1,14 +1,19 @@
 import { redirect } from "next/navigation"
-import { currentUser } from "@clerk/nextjs/server"
 import { DashboardShell } from "@/components/ui/dashboard-shell"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { CreateGameRoomForm } from "./create-form"
+import { getAuthSession } from "@/lib/auth"
 
 export default async function CreateGameRoom() {
   // Check if user is authenticated
-  const user = await currentUser()
-  if (!user) {
+  const session = await getAuthSession()
+  if (!session?.user) {
     redirect("/sign-in")
+  }
+
+  // Check if user has admin role
+  if (session.user.role !== "admin") {
+    redirect("/")
   }
 
   return (
@@ -22,7 +27,7 @@ export default async function CreateGameRoom() {
             <CardDescription>Create a new game room for your participants</CardDescription>
           </CardHeader>
           <CardContent>
-            <CreateGameRoomForm userId={user.id} />
+            <CreateGameRoomForm />
           </CardContent>
         </Card>
       </div>

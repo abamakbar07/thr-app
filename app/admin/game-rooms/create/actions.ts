@@ -4,16 +4,26 @@ import { revalidatePath } from "next/cache"
 import { db } from "@/lib/db"
 import { gameRooms } from "@/lib/db/schema"
 import { generateUniqueCode } from "@/lib/utils"
+import { getAuthSession } from "@/lib/auth"
 
-export async function createGameRoom(formData: FormData, adminId: string) {
+export async function createGameRoom(formData: FormData) {
   try {
+    // Get the current session
+    const session = await getAuthSession()
+    if (!session?.user) {
+      return {
+        success: false,
+        error: "You must be signed in to create a game room",
+      }
+    }
+
     // Get form data
     const name = formData.get("name") as string
 
-    if (!name || !adminId) {
+    if (!name) {
       return {
         success: false,
-        error: "Room name and admin ID are required",
+        error: "Room name is required",
       }
     }
 
@@ -26,7 +36,7 @@ export async function createGameRoom(formData: FormData, adminId: string) {
       .values({
         name,
         code,
-        adminId,
+        adminId: session.user.id,
         active: true,
       })
       .returning()
