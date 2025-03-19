@@ -20,6 +20,14 @@ const nextConfig = {
     webpackBuildWorker: true,
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
+    serverActions: {
+      // Allow forwarded server actions from GitHub Codespaces domains
+      allowedOrigins: [
+        // "localhost:3000",
+        ".app.github.dev",
+        ".preview.app.github.dev"
+      ],
+    },
   },
 }
 

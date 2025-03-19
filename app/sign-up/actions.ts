@@ -33,20 +33,22 @@ export async function registerUser({ name, email, password }: RegisterUserParams
     const hashedPassword = await bcrypt.hash(password, 10)
     console.log("Password hashed")
 
-    // Create the user with SQL directly to avoid schema issues
-    const sql = db.session.sql
-    const result = await sql`
-      INSERT INTO users (id, name, email, password, role, created_at, updated_at)
-      VALUES (${uuidv4()}, ${name}, ${email}, ${hashedPassword}, 'admin', NOW(), NOW())
-      RETURNING id
-    `
+    // Create the user using Drizzle ORM insert
+    const [newUser] = await db.insert(users).values({
+      id: uuidv4(),
+      name,
+      email,
+      password: hashedPassword,
+      role: 'admin',
+      created_at: new Date(),
+      updated_at: new Date(),
+    }).returning({ id: users.id })
 
-    const userId = result[0]?.id
-    console.log("User created with ID:", userId)
+    console.log("User created with ID:", newUser.id)
 
     return {
       success: true,
-      userId,
+      userId: newUser.id,
     }
   } catch (error) {
     console.error("Error registering user:", error)
