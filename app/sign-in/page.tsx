@@ -35,20 +35,20 @@ export default function SignIn() {
 
       if (result?.error) {
         toast({
-          title: "Authentication Error",
-          description: "Invalid email or password",
+          title: "Error",
+          description: result.error,
           variant: "destructive",
         })
       } else {
-        router.push(callbackUrl)
+        // Wait for session to be updated
+        await new Promise(resolve => setTimeout(resolve, 500))
+        
+        // Use router.replace instead of push to avoid back button issues
+        router.replace("/admin/dashboard")
         router.refresh()
       }
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred",
-        variant: "destructive",
-      })
+      // Error handling
     } finally {
       setLoading(false)
     }
