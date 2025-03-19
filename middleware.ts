@@ -14,27 +14,23 @@ export async function middleware(request: NextRequest) {
     "/reset-password",
     "/play",
     "/api/auth",
-    "/api/webhooks",
-    "/api/migrate",
   ]
 
-  // Check if the path is public
-  const isPublicPath = publicPaths.some((publicPath) => path === publicPath || path.startsWith(`${publicPath}/`))
+  const isPublicPath = publicPaths.some(
+    (p) => path === p || path.startsWith(`${p}/`)
+  )
 
-  // Get the token
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
   })
 
-  // Redirect unauthenticated users from protected routes to sign-in
   if (!token && !isPublicPath) {
     const url = new URL("/sign-in", request.url)
     url.searchParams.set("callbackUrl", encodeURI(request.url))
     return NextResponse.redirect(url)
   }
 
-  // Allow the request to proceed
   return NextResponse.next()
 }
 

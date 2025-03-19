@@ -87,8 +87,6 @@
     "nodemailer": "latest",
     "drizzle-orm": "latest",
     "next-auth": "latest",
-    "@clerk/nextjs": "latest",
-    "svix": "latest",
     "@auth/drizzle-adapter": "latest",
     "bcryptjs": "latest",
     "uuid": "latest"
